@@ -3,7 +3,7 @@ const app = express()
 require("dotenv").config()
 const cors = require("cors")
 const port = process.env.PORT || 4000
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 // middleware
@@ -42,8 +42,16 @@ const run = async () => {
             res.send(result)
         })
 
+        app.get('/books/:id', async (req,res) => {
+            const {id} = req.params
+            const objectId = new ObjectId(id)
+
+            const result = await booksCollection.findOne({_id: objectId})
+            res.send(result)
+        })
+
         app.get('/latest-books', async(req,res) => {
-            const result = await booksCollection.find().sort({created_at: "desc"}).limit(6).toArray()
+            const result = await booksCollection.find().sort({created_at: -1}).limit(6).toArray()
             res.send(result)
         })
 
