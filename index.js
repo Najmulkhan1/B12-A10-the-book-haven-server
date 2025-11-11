@@ -50,6 +50,18 @@ const run = async () => {
             res.send(result)
         })
 
+        app.put('/books/:id', async(req,res) => {
+            const {id} = req.params
+            const data = req.body
+            const objectId = new ObjectId(id)
+            const filter = {_id: objectId}
+            const update = {
+                $set: data
+            }
+            const result = await booksCollection.updateOne(filter, update)
+            res.send(result)
+        })
+
         app.delete('/books/:id', async (req, res) => {
             const {id} = req.params
 
