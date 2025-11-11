@@ -50,6 +50,19 @@ const run = async () => {
             res.send(result)
         })
 
+        app.delete('/books/:id', async (req, res) => {
+            const {id} = req.params
+
+            const result = await booksCollection.deleteOne({_id: new ObjectId(id)})
+            res.send(result)
+        })
+
+        app.get('/my-books', async(req,res) => {
+            const email = req.query.email
+            const result = await booksCollection.find({userEmail: email}).toArray()
+            res.send(result)
+        })
+
         app.get('/latest-books', async(req,res) => {
             const result = await booksCollection.find().sort({created_at: -1}).limit(6).toArray()
             res.send(result)
