@@ -29,6 +29,7 @@ const run = async () => {
 
         const db = client.db("book-haven")
         const booksCollection = db.collection('books')
+        const commentsCollection = db.collection('comment')
 
 
         app.get('/books', async (req,res) => {
@@ -53,11 +54,12 @@ const run = async () => {
         app.put('/books/:id', async(req,res) => {
             const {id} = req.params
             const data = req.body
+            console.log(id)
+            console.log(data)
             const objectId = new ObjectId(id)
             const filter = {_id: objectId}
             const update = {
-                $set: data
-            }
+                $set: data,            }
             const result = await booksCollection.updateOne(filter, update)
             res.send(result)
         })
@@ -77,6 +79,11 @@ const run = async () => {
 
         app.get('/latest-books', async(req,res) => {
             const result = await booksCollection.find().sort({created_at: -1}).limit(6).toArray()
+            res.send(result)
+        })
+
+        app.get('/comments', async(req,res) =>{
+            const result = await commentsCollection.find().toArray()
             res.send(result)
         })
 
