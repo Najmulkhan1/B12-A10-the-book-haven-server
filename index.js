@@ -83,7 +83,8 @@ const run = async () => {
         })
 
         app.get('/comments', async(req,res) =>{
-            const result = await commentsCollection.find().toArray()
+            const productId = req.query.productId
+            const result = await commentsCollection.find({productId: productId}).toArray()
             res.send(result)
         })
 
