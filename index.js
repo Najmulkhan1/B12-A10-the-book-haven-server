@@ -82,6 +82,16 @@ const run = async () => {
             res.send(result)
         })
 
+        app.get('/Asort-rating', async(req,res) => {
+            const result = await booksCollection.find().sort({rating: -1}).toArray()
+            res.send(result)
+        })
+
+        app.get('/dsort-rating', async(req,res) => {
+            const result = await booksCollection.find().sort({rating: 1}).toArray()
+            res.send(result)
+        })
+
         app.get('/comments', async(req,res) =>{
             const productId = req.query.productId
             const result = await commentsCollection.find({productId: productId}).toArray()
