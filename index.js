@@ -5,10 +5,44 @@ const cors = require("cors")
 const port = process.env.PORT || 4000
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
+const admin = require("firebase-admin");
 
+const serviceAccount = require("./the-book-haven-firebase-adminsdk.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
 // middleware
 app.use(cors())
 app.use(express.json())
+
+const verifyFireBaseToken = async (req, res, next) => {
+
+    console.log("in the verify middleware", req.headers.authorization);
+    if(!req.headers.authorization){
+        //do not allow
+        res.status(401).send({message: "unauthorized access"})
+    }
+
+    const token = req.headers.authorization.split(' ')[1]
+    if(!token) {
+        return res.status(401).send({massage: 'unauthorized access'})
+    }
+
+
+    try {
+        const userInfo = await admin.auth().verifyIdToken(token)
+        console.log("after",userInfo);
+        
+        next()
+    } catch {
+        return res.status(401).send({massage: 'unauthorized access'})
+    }
+
+    // verify token
+
+    
+}
 
 // mongodb connect
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.0zyxsoe.mongodb.net/?appName=Cluster0`;
@@ -72,7 +106,9 @@ const run = async () => {
             res.send(result)
         })
 
-        app.get('/my-books', async(req,res) => {
+        app.get('/my-books', verifyFireBaseToken, async(req,res) => {
+            console.log('headers', req.headers);
+            
             const email = req.query.email
             const result = await booksCollection.find({userEmail: email}).toArray()
             res.send(result)
