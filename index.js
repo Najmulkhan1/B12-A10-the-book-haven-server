@@ -30,6 +30,7 @@ const run = async () => {
         const db = client.db("book-haven")
         const booksCollection = db.collection('books')
         const commentsCollection = db.collection('comment')
+        const reviewsCollection = db.collection('reviews')
 
 
         app.get('/books', async (req,res) => {
@@ -82,13 +83,24 @@ const run = async () => {
             res.send(result)
         })
 
-        app.get('/Asort-rating', async(req,res) => {
+        app.get('/asort-rating', async(req,res) => {
             const result = await booksCollection.find().sort({rating: -1}).toArray()
             res.send(result)
         })
 
         app.get('/dsort-rating', async(req,res) => {
             const result = await booksCollection.find().sort({rating: 1}).toArray()
+            res.send(result)
+        })
+
+        app.get('/top-rated', async(req, res) => {
+            const result = await booksCollection.find().sort({rating: -1}).limit(3).toArray()
+            res.send(result)
+        })
+
+        app.get('/search', async(req,res) => {
+            const search_text = req.query.search
+            const result = await booksCollection.find({title: {$regex: search_text, $options:'i'}}).toArray()
             res.send(result)
         })
 
@@ -101,6 +113,18 @@ const run = async () => {
         app.post('/comments', async(req,res) => {
             const data = req.body
             const result = await commentsCollection.insertOne(data)
+            res.send(result)
+        })
+
+        app.get('/reviews', async(req, res) => {
+            const productId = req.query.productId
+            const result = await reviewsCollection.find({productId: productId}).toArray()
+            res.send(result)
+        })
+
+        app.post('/reviews', async(req,res)  => {
+            const data = req.body
+            const result = await reviewsCollection.insertOne(data)
             res.send(result)
         })
 
