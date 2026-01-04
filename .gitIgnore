@@ -1,5 +1,5 @@
 node_modules
-.env
 .vercel
 the-book-haven-firebase-adminsdk.json
 Regeveindex.js
+config.bat
